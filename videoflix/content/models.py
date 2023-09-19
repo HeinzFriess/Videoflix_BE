@@ -9,5 +9,5 @@ class Video(models.Model):
     video_file = models.FileField(upload_to='videos' , blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.title
+        return self.title 
     
