@@ -1,5 +1,5 @@
 import os
-
+import django_rq
 from content.tasks import convert480p, convert720p
 from .models import Video
 from django.dispatch import receiver
@@ -12,8 +12,11 @@ def video_post_save(sender, instance, created, **kwargs):
     Video_file_path = instance.video_file.path
 
     if created:
-        convert480p(Video_file_path)
-        convert720p(Video_file_path)
+        queue = django_rq.get_queue('default',autocommit=True)
+        queue.enqueue(convert480p, Video_file_path)
+        queue.enqueue(convert720p, Video_file_path)
+        #convert480p(Video_file_path)
+        #convert720p(Video_file_path)
         print('New Video created')
 
 
