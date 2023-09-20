@@ -11,10 +11,9 @@ def video_post_save(sender, instance, created, **kwargs):
     # Get the path to the Video file
     Video_file_path = instance.video_file.path
 
-    print('Video: ' + Video_file_path + ' gespeichert')
     if created:
         convert480p(Video_file_path)
-        #convert720p(Video_file_path)
+        convert720p(Video_file_path)
         print('New Video created')
 
 

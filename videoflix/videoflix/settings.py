@@ -44,12 +44,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -134,16 +134,17 @@ MEDIA_URL = '/media/'
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "rediss://127.0.0.1:6379/1",
         "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "ssl_cert_reqs": None,
         },
         "KEY_PREFIX": "videoflix"
     }
 }
 
 INTERNAL_IPS = [
-   "127.0.0.1",
+    "127.0.0.1",
 ]
 
 RQ_QUEUES = {
@@ -151,11 +152,13 @@ RQ_QUEUES = {
         'HOST': 'localhost',
         'PORT': 6379,
         'DB': 0,
-        'USERNAME': 'some-user',
-        'PASSWORD': 'some-password',
+        # 'USERNAME': 'some-user',
+        'PASSWORD': 'foobared',
         'DEFAULT_TIMEOUT': 360,
-        'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
-            'ssl_cert_reqs': None,
-        },
+        # 'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
+        #     'ssl_cert_reqs': None,
+        # },
     },
 }
+
+CACHE_TTL = 60 * 15
