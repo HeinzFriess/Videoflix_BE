@@ -13,3 +13,13 @@ class VideoAdmin(ImportExportModelAdmin):
     pass
 
 admin.site.register(Video,VideoAdmin)
+
+
+from content.admin import VideoResource
+import json  
+
+def exportBackUp():
+	dataset = VideoResource().export()
+	with open("VideoResourceBackUp.json", "w") as save_file: 
+	    json.dump(dataset.json , save_file, indent = 6)
+    #save_file.close()
