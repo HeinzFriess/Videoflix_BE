@@ -23,3 +23,7 @@ def exportBackUp():
 	with open("VideoResourceBackUp.json", "w") as save_file: 
 	    json.dump(dataset.json , save_file, indent = 6)
     #save_file.close()
+
+def importBackUp():
+    with open("VideoResourceBackUp.json") as json_file:
+        data = json.load(json_file)
