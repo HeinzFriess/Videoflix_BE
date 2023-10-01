@@ -168,10 +168,10 @@ INTERNAL_IPS = [
 
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': 6379,
         'DB': 0,
-        # 'USERNAME': 'some-user',
+        #'USERNAME': 'some-user',
         'PASSWORD': 'foobared',
         'DEFAULT_TIMEOUT': 360,
         # 'REDIS_CLIENT_KWARGS': {    # Eventual additional Redis connection arguments
