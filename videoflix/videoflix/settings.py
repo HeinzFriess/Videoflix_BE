@@ -33,17 +33,18 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'content.apps.ContentConfig',
+    #'content.apps.ContentConfig',
     'debug_toolbar',
     'django_rq',
     'import_export',
-    #'videoflix.content',
+    'content',
     'users',
 ]
 
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'videoflix.urls'
 
@@ -185,3 +187,11 @@ RQ_QUEUES = {
 CACHE_TTL = 60 * 15
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.gmx.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'friess.heinz@gmx.de'
+EMAIL_HOST_PASSWORD = env("MAIL_PASSWORD")
+
