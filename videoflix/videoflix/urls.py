@@ -19,7 +19,7 @@ urlpatterns = [
     path('signup/', signupview.as_view()),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('__debug__/', include(debug_toolbar.urls)),
+    #path('__debug__/', include(debug_toolbar.urls)),
     path('django-rq/', include('django_rq.urls')),
     path('adduser/', adduserview.as_view()),
     #path('video/', views.VideoViewSet.as_view(), name='video_view'),
