@@ -24,15 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-6)$p#nfo-^75&)405j!*6+csgnlr=0(m6sh@glf0@g1&mtv%(j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = True
-DEBUG = bool(os.environ.get("DEBUG", default=0))
+DEBUG = False
+#DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = [
     'localhost',
      '127.0.0.1',
+	'https://heinz-friess.developerakademie.org/admin/login/',
+	'heinz-friess.developerakademie.org',
+	'*',
 ]
 #ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+CSFR_TRUSTED_ORIGINS =  ['http://*', 'https://heinz-friess.developerakademie.org/*']
 
 # Application definition
 
@@ -148,8 +154,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/staticfiles')
+STATIC_URL = '/static/'
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/staticfiles')
+STATIC_ROOT = '/var/www/static/'
+
+#print(f"Static_ROOT directory is: {STATIC_ROOT}")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -157,7 +166,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT =  '/var/www/media/'
 MEDIA_URL = '/media/'
 
 CACHES = {
@@ -201,3 +210,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'friess.heinz@gmx.de'
 EMAIL_HOST_PASSWORD = env("MAIL_PASSWORD")
 
+import mimetypes
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/javascript", ".js", True)
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 100 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 100 MB
