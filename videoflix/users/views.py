@@ -6,8 +6,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework import status,generics
 from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
+from django.utils.encoding import force_bytes,force_text
+from django.template.loader import render_to_string
 
 from rest_framework.authtoken.views import ObtainAuthToken, APIView
 
@@ -81,3 +85,46 @@ class adduserview(generics.CreateAPIView):
             send_mail(subject, message, 'friess.heinz@gmx.de', [to], fail_silently=False)
         except Exception as e:
             return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+def register(request):
+    if request.method == 'POST':
+        # Handle form data and create a new user
+        new_user = CustomUser.objects.create_user(username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
+        
+        # Send email confirmation
+        token = default_token_generator.make_token(new_user)
+        uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+        email_subject = 'Activate your account'
+        email_body = render_to_string('email_confirmation.html', {
+            'user': new_user,
+            'uid': uid,
+            'token': token,
+        })
+        try:
+            send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+        except Exception as e:
+            return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response({            # Redirect to a page indicating that the email has been sent
+                'emailIsSend': True,
+                'email': new_user.email
+        }) 
+    else:
+        # Render registration form
+        return render(request, 'registration.html')
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        user.email_confirmed = True
+        user.save()
+        # You can redirect to a page indicating successful activation
+        return Response('Your account has been activated successfully!')
+    else:
+        # Handle invalid activation link/token
+        return Response('Activation link is invalid!')

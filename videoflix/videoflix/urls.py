@@ -5,14 +5,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from content.views import VideoViewSet
-from users.views import adduserview, signupview, loginview
+from users.views import adduserview, signupview, loginview, register, activate_account
 
 router = DefaultRouter()
 router.register(r'videos', VideoViewSet)
 
 
-if settings.DEBUG:
-    import debug_toolbar
+#if settings.DEBUG:
+    #import debug_toolbar
 
 urlpatterns = [
     path('login/', loginview.as_view()),
@@ -22,5 +22,7 @@ urlpatterns = [
     #path('__debug__/', include(debug_toolbar.urls)),
     path('django-rq/', include('django_rq.urls')),
     path('adduser/', adduserview.as_view()),
+    path('register/', register, name='register'),
+    path('activate/<uidb64>/<token>/', activate_account, name='activate_account'),
     #path('video/', views.VideoViewSet.as_view(), name='video_view'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
