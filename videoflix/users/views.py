@@ -54,15 +54,14 @@ class loginview(ObtainAuthToken):
         password = request.data.get('password')
         user = authenticate(request, username=username, email=email, password=password)
         print(user)
-        if user is not None:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({
-                'user_id': user.pk,
-                'token': token.key,
-                'email': user.email
-                })
-        else:
+        if user is None:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            'user_id': user.pk,
+            'token': token.key,
+            'email': user.email
+            })
 
 class signupview(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -87,31 +86,30 @@ class adduserview(generics.CreateAPIView):
             return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 def register(request):
-    if request.method == 'POST':
-        # Handle form data and create a new user
-        new_user = CustomUser.objects.create_user(username=request.POST['username'], email=request.POST['email'], password=request.POST['password'])
-        
-        # Send email confirmation
-        token = default_token_generator.make_token(new_user)
-        uid = urlsafe_base64_encode(force_bytes(new_user.pk))
-        email_subject = 'Activate your account'
-        email_body = render_to_string('email_confirmation.html', {
-            'user': new_user,
-            'uid': uid,
-            'token': token,
-        })
-        try:
-            send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
-        except Exception as e:
-            return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response({            # Redirect to a page indicating that the email has been sent
-                'emailIsSend': True,
-                'email': new_user.email
-        }) 
-    else:
+    if request.method != 'POST':
         # Render registration form
         return render(request, 'registration.html')
+    # Handle form data and create a new user
+    new_user = CustomUser.objects.create_user(username=request.data.get('username'), email=request.data.get('email'), password=request.data.get('password'))
+
+    # Send email confirmation
+    token = default_token_generator.make_token(new_user)
+    uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+    email_subject = 'Activate your account'
+    email_body = render_to_string('email_confirmation.html', {
+        'user': new_user,
+        'uid': uid,
+        'token': token,
+    })
+    try:
+        send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+    except Exception as e:
+        return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response({            # Redirect to a page indicating that the email has been sent
+            'emailIsSend': True,
+            'email': new_user.email
+    })
 
 def activate_account(request, uidb64, token):
     try:
