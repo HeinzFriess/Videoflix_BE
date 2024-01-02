@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-6)$p#nfo-^75&)405j!*6+csgnlr=0(m6sh@glf0@g1&mtv%(j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #DEBUG = bool(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = [
@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True
-CSFR_TRUSTED_ORIGINS =  ['http://*', 'https://heinz-friess.developerakademie.org/*']
+CSFR_TRUSTED_ORIGINS =  ['http://*', 'https://heinz-friess.developerakademie.org/*', 'localhost', '127.0.0.1']
 
 # Application definition
 

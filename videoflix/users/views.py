@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from videoflix.serializers import SignupSerializer,UsersSerializer, EmailSerializer
 from users.models import CustomUser
@@ -12,6 +13,7 @@ from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 from rest_framework.authtoken.views import ObtainAuthToken, APIView
 
@@ -85,31 +87,38 @@ class adduserview(generics.CreateAPIView):
         except Exception as e:
             return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-def register(request):
+
+
+def register(request):  
     if request.method != 'POST':
-        # Render registration form
-        return render(request, 'registration.html')
-    # Handle form data and create a new user
-    new_user = CustomUser.objects.create_user(username=request.data.get('username'), email=request.data.get('email'), password=request.data.get('password'))
-
-    # Send email confirmation
-    token = default_token_generator.make_token(new_user)
-    uid = urlsafe_base64_encode(force_bytes(new_user.pk))
-    email_subject = 'Activate your account'
-    email_body = render_to_string('email_confirmation.html', {
-        'user': new_user,
-        'uid': uid,
-        'token': token,
-    })
+        return JsonResponse({'error': 'Only POST requests are allowed for registration.'}, status=405)
+    # Parse JSON data manually
     try:
-        send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
-    except Exception as e:
-        return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        email = data.get('email')
 
-    return Response({            # Redirect to a page indicating that the email has been sent
-            'emailIsSend': True,
-            'email': new_user.email
-    })
+        # Handle the registration process
+        new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
+        # Rest of your email sending logic...
+        # Send email confirmation
+        token = default_token_generator.make_token(new_user)
+        uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+        email_subject = 'Activate your account'
+        email_body = render_to_string('email_confirmation.html', {
+            'user': new_user,
+            'uid': uid,
+            'token': token,
+        })
+        send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+
+
+        return JsonResponse({'message': 'Registration successful. Email sent for confirmation.'})
+    except json.JSONDecodeError as e:
+        return JsonResponse({'error': 'Invalid JSON data provided.'}, status=400)
+    except KeyError as e:
+        return JsonResponse({'error': f'Missing key in JSON data: {str(e)}'}, status=400)
 
 def activate_account(request, uidb64, token):
     try:

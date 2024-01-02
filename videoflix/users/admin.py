@@ -28,6 +28,7 @@ class CustomUserAdmin(admin.ModelAdmin):
                     'custom',
                     'phone',
                     'address',
+                    'email_confirmed',
                 )
             }
         )
