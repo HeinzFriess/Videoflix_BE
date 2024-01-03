@@ -14,6 +14,11 @@ from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+from rest_framework.renderers import JSONRenderer
+
+renderer = JSONRenderer()
+
+
 
 from rest_framework.authtoken.views import ObtainAuthToken, APIView
 
@@ -63,7 +68,7 @@ class loginview(ObtainAuthToken):
             'user_id': user.pk,
             'token': token.key,
             'email': user.email
-            })
+            }, status=status.HTTP_202_ACCEPTED)
 
 class signupview(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -111,14 +116,23 @@ def register(request):
             'uid': uid,
             'token': token,
         })
-        send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+        try:
+            send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+            return JsonResponse({            # Redirect to a page indicating that the email has been sent
+                'emailIsSend': True,
+                'email': new_user.email
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+                return JsonResponse({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        
 
-        return JsonResponse({'message': 'Registration successful. Email sent for confirmation.'})
     except json.JSONDecodeError as e:
         return JsonResponse({'error': 'Invalid JSON data provided.'}, status=400)
     except KeyError as e:
         return JsonResponse({'error': f'Missing key in JSON data: {str(e)}'}, status=400)
+    
+
 
 def activate_account(request, uidb64, token):
     try:
@@ -131,7 +145,7 @@ def activate_account(request, uidb64, token):
         user.email_confirmed = True
         user.save()
         # You can redirect to a page indicating successful activation
-        return Response('Your account has been activated successfully!')
+        return JsonResponse({'message' : 'Your account has been activated successfully!' })
     else:
         # Handle invalid activation link/token
-        return Response('Activation link is invalid!')
+        return JsonResponse({'message' : 'Activation link is invalid!'})
