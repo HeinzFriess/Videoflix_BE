@@ -15,6 +15,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.http import JsonResponse
 from rest_framework.renderers import JSONRenderer
+from django.core.mail import EmailMultiAlternatives
 
 renderer = JSONRenderer()
 
@@ -121,8 +122,19 @@ def register(request):
             'uid': uid,
             'token': token,
         })
+        # Create an EmailMultiAlternatives object
+        email = EmailMultiAlternatives(
+            email_subject,
+            '',
+            'friess.heinz@gmx.de',
+            [new_user.email],
+            fail_silently=False
+        )
+
+        # Attach the HTML content to the email
+        email.attach_alternative(email_body, 'text/html')
         try:
-            send_mail(email_subject, email_body, 'friess.heinz@gmx.de', [new_user.email], fail_silently=False)
+            email.send()
             return JsonResponse({            # Redirect to a page indicating that the email has been sent
                 'emailIsSend': True,
                 'email': new_user.email
