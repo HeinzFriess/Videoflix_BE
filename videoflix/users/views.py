@@ -63,6 +63,8 @@ class loginview(ObtainAuthToken):
         print(user)
         if user is None:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+	if not user.email_confirmed:
+            return Response({'error': 'Email address not validated'}, status=status.HTTP_403_FORBIDDEN)
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
             'user_id': user.pk,
