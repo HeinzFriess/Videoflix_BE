@@ -127,8 +127,7 @@ def register(request):
             email_subject,
             '',
             'friess.heinz@gmx.de',
-            [new_user.email],
-            fail_silently=False
+            [new_user.email]
         )
 
         # Attach the HTML content to the email
