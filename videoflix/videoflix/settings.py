@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import corsheaders
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,8 +34,14 @@ ALLOWED_HOSTS = [
 	'https://heinz-friess.developerakademie.org/admin/login/',
 	'heinz-friess.developerakademie.org',
 	'*',
-    'http://localhost:4200'
+    
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:4200',
+]
+
+
 #ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
@@ -58,10 +65,12 @@ INSTALLED_APPS = [
     'import_export',
     'content',
     'users',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
