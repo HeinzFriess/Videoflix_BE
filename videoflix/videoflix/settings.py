@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
 	'https://heinz-friess.developerakademie.org/admin/login/',
 	'heinz-friess.developerakademie.org',
 	'*',
+    'http://localhost:4200'
 ]
 #ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 CSRF_COOKIE_SECURE = True
