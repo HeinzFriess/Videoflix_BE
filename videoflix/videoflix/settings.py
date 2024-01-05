@@ -51,7 +51,7 @@ CSFR_TRUSTED_ORIGINS =  [
     'https://heinz-friess.developerakademie.org/*', 
     'localhost', 
     '127.0.0.1',
-    'http://localhost:4200'
+    'http://localhost:4200/'
     '127.0.0.1:4200'
     ]
 
