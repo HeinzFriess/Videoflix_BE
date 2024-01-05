@@ -46,7 +46,14 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True
-CSFR_TRUSTED_ORIGINS =  ['http://*', 'https://heinz-friess.developerakademie.org/*', 'localhost', '127.0.0.1']
+CSFR_TRUSTED_ORIGINS =  [
+    'http://*', 
+    'https://heinz-friess.developerakademie.org/*', 
+    'localhost', 
+    '127.0.0.1',
+    'http://localhost:4200'
+    '127.0.0.1:4200'
+    ]
 
 # Application definition
 
