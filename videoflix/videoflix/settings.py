@@ -46,16 +46,12 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS =  [
-    'http://*', 
-    'https://heinz-friess.developerakademie.org/*', 
-    'localhost', 
-    'localhost:4200'
-    'localhost:4200/*'
-    '127.0.0.1',
-    'http://localhost:4200/'
-    '127.0.0.1:4200'
-    ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:4200',
+    'https://heinz-friess.developerakademie.org/*',
+]
+
 
 # Application definition
 
@@ -78,18 +74,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -99,7 +83,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 ROOT_URLCONF = 'videoflix.urls'
 
