@@ -248,3 +248,23 @@ mimetypes.add_type("text/javascript", ".js", True)
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 100 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880 # 100 MB
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/videoflix.log',  # Replace with your log file path
+        },
+    },
+    'loggers': {
+        'videoflix': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
