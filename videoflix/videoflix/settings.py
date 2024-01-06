@@ -50,6 +50,7 @@ SESSION_COOKIE_SECURE = True
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:4200',
+    'https://localhost:4200',
     'https://heinz-friess.developerakademie.org/*',
 ]
 
