@@ -41,6 +41,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
     'https://localhost:4200',
     'https://videoflix.heinzfriess.com',
+    'https://heinzfriess.com',
 ]
 
 
@@ -54,6 +55,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://localhost:4200',
     'https://heinz-friess.developerakademie.org/*',
     'https://videoflix.heinzfriess.com',
+    'https://heinzfriess.com',
 ]
 
 
