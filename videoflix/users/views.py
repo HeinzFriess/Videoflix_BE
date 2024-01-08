@@ -1,5 +1,5 @@
 import json
-from django.shortcuts import render
+from django.shortcuts import redirect
 from videoflix.serializers import SignupSerializer,UsersSerializer, EmailSerializer
 from users.models import CustomUser
 from rest_framework.authentication import TokenAuthentication
@@ -159,6 +159,6 @@ def activate_account(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.email_confirmed = True
         user.save()
-        return JsonResponse({'message' : 'Your account has been activated successfully!' })
+        return redirect('https://videoflix.heinzfriess.com')
     else:
         return JsonResponse({'message' : 'Activation link is invalid!'})
