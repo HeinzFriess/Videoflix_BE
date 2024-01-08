@@ -22,6 +22,7 @@ renderer = JSONRenderer()
 
 
 from rest_framework.authtoken.views import ObtainAuthToken, APIView
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -84,8 +85,6 @@ class signupview(generics.CreateAPIView):
 class adduserview(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     permission_classes = [AllowAny]
-    #serializer_class = SignupSerializer
-
     serializer_class = EmailSerializer
 
     def perform_create(self, serializer):
@@ -99,7 +98,7 @@ class adduserview(generics.CreateAPIView):
             return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
+@csrf_exempt
 def register(request):  
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST requests are allowed for registration.'}, status=405)
@@ -112,7 +111,7 @@ def register(request):
 
         # Handle the registration process
         new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
-        # Rest of your email sending logic...
+        
         # Send email confirmation
         token = default_token_generator.make_token(new_user)
         uid = urlsafe_base64_encode(force_bytes(new_user.pk))
@@ -134,7 +133,7 @@ def register(request):
         email.attach_alternative(email_body, 'text/html')
         try:
             email.send()
-            return JsonResponse({            # Redirect to a page indicating that the email has been sent
+            return JsonResponse({            
                 'emailIsSend': True,
                 'email': new_user.email
             }, status=status.HTTP_200_OK)
@@ -160,8 +159,6 @@ def activate_account(request, uidb64, token):
     if user is not None and default_token_generator.check_token(user, token):
         user.email_confirmed = True
         user.save()
-        # You can redirect to a page indicating successful activation
         return JsonResponse({'message' : 'Your account has been activated successfully!' })
     else:
-        # Handle invalid activation link/token
         return JsonResponse({'message' : 'Activation link is invalid!'})
