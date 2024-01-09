@@ -2,5 +2,4 @@ env/
 envdisabled/
 media/
 db.sqlite3
-/videoflix/videoflix/.env
-.env
+videoflix/.env
