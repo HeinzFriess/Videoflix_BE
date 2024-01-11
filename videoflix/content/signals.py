@@ -14,13 +14,15 @@ def video_post_save(sender, instance, created, **kwargs):
     if created:
         queue = django_rq.get_queue('default',autocommit=True)
         queue.enqueue(convert360p, Video_file_path)
-        sender.video_file360p = Video_file_path.replace(".mp4", "_360p.mp4")
+        instance.video_file360p = Video_file_path.replace(".mp4", "_360p.mp4")
         queue.enqueue(convert720p, Video_file_path)
-        sender.video_file720p = Video_file_path.replace(".mp4", "_720p.mp4")
+        instance.video_file720p = Video_file_path.replace(".mp4", "_720p.mp4")
         queue.enqueue(convert1080p, Video_file_path)
-        sender.video_file1080p = Video_file_path.replace(".mp4", "_1080p.mp4")
+        instance.video_file1080p = Video_file_path.replace(".mp4", "_1080p.mp4")
         queue.enqueue(createThumbnail, Video_file_path)
-        sender.video_fileThumbnail = Video_file_path.replace(".mp4", "jpg")
+        instance.video_fileThumbnail = Video_file_path.replace(".mp4", ".jpg")
+    
+    instance.save()
 
 
 @receiver(pre_delete, sender=Video)

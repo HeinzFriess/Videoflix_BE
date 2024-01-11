@@ -17,5 +17,5 @@ def convert360p(source):
 
 def createThumbnail(source):
     new_file_name = source.replace(".mp4", ".jpg")
-    cmd = ['ffmpeg', '-i', source, '-ss', '00:00:00', '-frames:v 1',  new_file_name]
-    run = subprocess.run(cmd, capture_output=True)
+    cmd = ['ffmpeg', '-i', source, '-ss', '00:00:00', '-frames:v', '1', new_file_name]
+    run = subprocess.run(cmd, capture_output=True) 
