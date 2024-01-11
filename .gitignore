@@ -3,4 +3,4 @@ envdisabled/
 media/
 db.sqlite3
 videoflix/.env
-videoflix/videoflix/.env.local
+videoflix/videoflix/.env
