@@ -6,6 +6,6 @@
 <body>
     <p>Hi {{ user.username }},</p>
     <p>Click the following link to activate your account:</p>
-    <a href="{{ request.build_absolute_uri|safe }}{% 'https://heinz-friess.developerakademie.org/' 'activate' uidb64=uid token=token %}">Activate Account</a>
+    <a href="{{ request.build_absolute_uri|safe }}{% url 'activate_account' uidb64=uid token=token %}">Activate Account</a>
 </body>
 </html>

@@ -23,6 +23,6 @@ urlpatterns = [
     path('django-rq/', include('django_rq.urls')),
     path('adduser/', adduserview.as_view()),
     path('register/', register, name='register'),
-    path('activate/<uidb64>/<token>/', activate_account, name='activate_account'),
+    path('activate/<str:uidb64>/<str:token>/', activate_account, name='activate_account'),
     #path('video/', views.VideoViewSet.as_view(), name='video_view'),
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

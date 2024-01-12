@@ -64,13 +64,13 @@ class loginview(ObtainAuthToken):
         user = authenticate(request, username=username, email=email, password=password)
         print(user)
         if user is None:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
         if not user.email_confirmed:
-            return Response({'error': 'Email address not validated'}, status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'error': 'Email address not validated'}, status=status.HTTP_403_FORBIDDEN)
         
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({
+        return JsonResponse({
             'user_id': user.pk,
             'token': token.key,
             'email': user.email
@@ -95,7 +95,7 @@ class adduserview(generics.CreateAPIView):
         try:
             send_mail(subject, message, 'friess.heinz@gmx.de', [to], fail_silently=False)
         except Exception as e:
-            return Response({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @csrf_exempt
@@ -108,44 +108,51 @@ def register(request):
         username = data.get('username')
         password = data.get('password')
         email = data.get('email')
-
-        # Handle the registration process
-        new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
-        
-        # Send email confirmation
-        token = default_token_generator.make_token(new_user)
-        uid = urlsafe_base64_encode(force_bytes(new_user.pk))
-        email_subject = 'Activate your account'
-        email_body = render_to_string('email_confirmation.html', {
-            'user': new_user,
-            'uid': uid,
-            'token': token,
-        })
-        # Create an EmailMultiAlternatives object
-        email = EmailMultiAlternatives(
-            email_subject,
-            '',
-            'friess.heinz@gmx.de',
-            [new_user.email]
-        )
-
-        # Attach the HTML content to the email
-        email.attach_alternative(email_body, 'text/html')
-        try:
-            email.send()
-            return JsonResponse({            
-                'emailIsSend': True,
-                'email': new_user.email
-            }, status=status.HTTP_200_OK)
-        except Exception as e:
-                return JsonResponse({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        
-
     except json.JSONDecodeError as e:
         return JsonResponse({'error': 'Invalid JSON data provided.'}, status=400)
-    except KeyError as e:
-        return JsonResponse({'error': f'Missing key in JSON data: {str(e)}'}, status=400)
+    
+    # Handle the registration process
+    try:
+        new_user = CustomUser.objects.create_user(username=username, email=email, password=password)
+    except Exception as e:
+        return JsonResponse({'message': 'Username allready exists', "error": str(e)}, status=401)
+    
+    email = createMail(new_user)
+    
+    try:
+        email.send()
+        return JsonResponse({            
+            'emailIsSend': True,
+            'email': new_user.email
+        }, status=status.HTTP_200_OK)
+    except Exception as e:
+            return JsonResponse({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def createMail(new_user):
+    # Build email confirmation
+    token = default_token_generator.make_token(new_user)
+    uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+    email_subject = 'Activate your account'
+    email_body = render_to_string('email_confirmation.html', {
+        'user': new_user,
+        'uid': uid,
+        'token': token,
+    })
+    # Create an EmailMultiAlternatives object
+    email = EmailMultiAlternatives(
+        email_subject,
+        '',
+        'friess.heinz@gmx.de',
+        [new_user.email]
+    )
+
+    # Attach the HTML content to the email
+    email.attach_alternative(email_body, 'text/html')
+
+    return email
+    
+    
     
 
 
