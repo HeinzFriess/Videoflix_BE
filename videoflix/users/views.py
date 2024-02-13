@@ -1,5 +1,6 @@
 import json
 from django.shortcuts import redirect
+from django.urls import reverse
 from videoflix.serializers import SignupSerializer,UsersSerializer, EmailSerializer
 from users.models import CustomUser
 from rest_framework.authentication import TokenAuthentication
@@ -117,7 +118,7 @@ def register(request):
     except Exception as e:
         return JsonResponse({'message': 'Username allready exists', "error": str(e)}, status=401)
     
-    email = createMail(new_user)
+    email = createMail(new_user, request)
     
     try:
         email.send()
@@ -129,15 +130,17 @@ def register(request):
             return JsonResponse({"message": "Email could not be sent", "error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-def createMail(new_user):
+def createMail(new_user, request):
     # Build email confirmation
     token = default_token_generator.make_token(new_user)
     uid = urlsafe_base64_encode(force_bytes(new_user.pk))
     email_subject = 'Activate your account'
+    
+    # Construct activation link
+    activation_link = request.build_absolute_uri(reverse('activate_account', kwargs={'uidb64': uid, 'token': token}))
     email_body = render_to_string('email_confirmation.html', {
         'user': new_user,
-        'uid': uid,
-        'token': token,
+        'activation_link': activation_link,
     })
     # Create an EmailMultiAlternatives object
     email = EmailMultiAlternatives(

@@ -5,7 +5,7 @@
 </head>
 <body>
     <p>Hi {{ user.username }},</p>
-    <p>Click the following link to activate your account:</p>
-    <a href="{{ request.build_absolute_uri|safe }}{% url 'activate_account' uidb64=uid token=token %}">Activate Account</a>
+    <p>Click the following link to activate your videoflix account:</p>
+    <a href="{{ activation_link }}">Activate Account</a>
 </body>
 </html>
